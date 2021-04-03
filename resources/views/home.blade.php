@@ -21,6 +21,10 @@
                     <a href="{{ route('home') }}" class="btn btn-info font-weight-bold d-block my-2">All</a>
                     <a href="{{ route('articles.category', ['category' => 'politics']) }}" class="btn btn-info font-weight-bold d-block my-2">Politics</a>
                     <a href="{{ route('articles.category', ['category' => 'sport']) }}" class="btn btn-info font-weight-bold d-block my-2">Sport</a>
+                    <form action="{{ route('articles.category.search') }}" method="get">
+                        <input type="text" name="category">
+                        <button class="btn btn-info font-weight-bold">Search</button>
+                    </form>
                 </div>
             </div>
         </div>

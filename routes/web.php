@@ -20,3 +20,4 @@ Auth::routes();
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/{category}' , [HomeController::class, 'category'])->name('articles.category');
+Route::get('/articles/search', [HomeController::class, 'search'])->name('articles.category.search');

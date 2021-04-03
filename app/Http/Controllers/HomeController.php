@@ -89,4 +89,34 @@ class HomeController extends Controller
         $content = View::make('home')->with('articles', $data);
         return Response::make($content, 200);
     }
+
+    public function search(Request $req)
+    {
+
+        $searchKey = $req->input('category');
+        
+        $data = Http::get("https://content.guardianapis.com/$searchKey?api-key=9d97b471-ee1c-473a-b293-7998a92c4182");
+        if(json_decode($data)->response->status == "error"){
+            abort(404);
+        }
+
+        $data = json_decode($data)->response->results;
+        
+
+        $articles = collect([]);
+      
+        foreach($data as $d){
+            $newArticle = new Article();
+            $newArticle->title = $d->webTitle;
+            $newArticle->category = $d->sectionName;
+            $newArticle->url = $d->webUrl;
+            $newArticle->webPublicationDate = $d->webPublicationDate;
+            $articles->push($newArticle);
+        }
+        
+    
+        // return view('home', compact('articles'));
+        $content = View::make('home')->with('articles', $data);
+        return Response::make($content, 200);
+    }
 }
