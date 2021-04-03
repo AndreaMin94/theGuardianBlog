@@ -12,22 +12,41 @@
 </div>
 
 
-<div class="container my-3">
+<div class="container-fluid my-5">
     <div class="row">
-        @foreach ($articles as $article)
-        <div class="col-12 col-md-3 my-3">
-            <div class="card">
-                <img class="card-img-top" src="https://picsum.photos/300/300" alt="Card image cap">
-                <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
+        <div class="col-3">
+            <h1>Filters</h1>
+            <div class="row">
+                <div class="col-12">
+                    <a href="{{ route('home') }}" class="btn btn-info">All</a>
+                  
+
+                </div>
+            </div>
+            
+        </div>
+        <div class="col-9">
+            <div class="container my-3">
+                <div class="row">
+                    @foreach ($articles as $article)
+                    <div class="col-12 col-md-3 my-3">
+                        <div class="card bg-dark text-white">
+                            <img class="card-img-top" src="https://picsum.photos/300/300" alt="Card image cap">
+                            <div class="card-body">
+                            <h3 class="card-title">{{ $article->webTitle }}</h3>
+                            <h5 class="card-text">{{ $article->sectionName }}</h5>
+                            <a href="#" class="btn btn-primary">Go somewhere</a>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
                 </div>
             </div>
         </div>
-        @endforeach
     </div>
 </div>
+
+
     
 
 @endsection
