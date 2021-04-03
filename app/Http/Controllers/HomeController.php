@@ -66,12 +66,13 @@ class HomeController extends Controller
         }
         
         $data = Http::get("https://content.guardianapis.com/$category?api-key=9d97b471-ee1c-473a-b293-7998a92c4182");
-    
+        if(json_decode($data)->response->status == "error"){
+            abort(404);
+        }
 
         $data = json_decode($data)->response->results;
         
-        // dd($data);
-        // dd($data->response->results);
+
         $articles = collect([]);
       
         foreach($data as $d){
