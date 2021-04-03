@@ -19,8 +19,10 @@
             <div class="row justify-content-center border">
                 <div class="col-8">
                     <a href="{{ route('home') }}" class="btn btn-info font-weight-bold d-block my-2">All</a>
-                    <a href="{{ route('articles.category', ['category' => 'politics']) }}" class="btn btn-info font-weight-bold d-block my-2">Politics</a>
-                    <a href="{{ route('articles.category', ['category' => 'sport']) }}" class="btn btn-info font-weight-bold d-block my-2">Sport</a>
+                    @foreach ($sections as $section)
+                    <a href="{{ route('articles.category', 
+                        ['category' => strtolower(str_replace(' ', '-', $section->name))]) }}" class="btn btn-info font-weight-bold d-block my-2">{{ $section->name }}</a>
+                    @endforeach
                     <form action="{{ route('articles.category.search') }}" method="get">
                         <input type="text" name="category">
                         <button class="btn btn-info font-weight-bold">Search</button>
