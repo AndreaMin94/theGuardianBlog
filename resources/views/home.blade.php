@@ -14,23 +14,23 @@
 
 <div class="container-fluid my-5">
     <div class="row">
-        <div class="col-3">
+        <div class="col-2">
             <h1>Filters</h1>
             <div class="row justify-content-center border">
                 <div class="col-8">
+                    <form action="{{ route('articles.category.search') }}" method="get">
+                        <input type="text" name="category">
+                        <button class="btn btn-info font-weight-bold">Search</button>
+                    </form>
                     <a href="{{ route('home') }}" class="btn btn-info font-weight-bold d-block my-2">All</a>
                     @foreach ($sections as $section)
                     <a href="{{ route('articles.category', 
                         ['category' => strtolower(str_replace(' ', '-', $section->name))]) }}" class="btn btn-info font-weight-bold d-block my-2">{{ $section->name }}</a>
                     @endforeach
-                    <form action="{{ route('articles.category.search') }}" method="get">
-                        <input type="text" name="category">
-                        <button class="btn btn-info font-weight-bold">Search</button>
-                    </form>
                 </div>
             </div>
         </div>
-        <div class="col-9">
+        <div class="col-10">
             <div class="container my-3">
                 <div class="row">
                     @foreach ($articles as $article)
@@ -38,8 +38,8 @@
                         <div class="card bg-dark text-white">
                             <img class="card-img-top" src="https://picsum.photos/300/300" alt="Card image cap">
                             <div class="card-body">
-                            <h3 class="card-title">{{ $article->webTitle }}</h3>
-                            <h5 class="card-text">{{ $article->sectionName }}</h5>
+                            <h3 class="card-title">{{ $article->title }}...</h3>
+                            <h5 class="card-text">{{ $article->category }}</h5>
                             <a href="#" class="btn btn-primary">Go somewhere</a>
                             </div>
                         </div>

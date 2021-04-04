@@ -31,40 +31,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $availableSection =  $data = Http::get("https://content.guardianapis.com/sections?api-key=9d97b471-ee1c-473a-b293-7998a92c4182");
-        $availableSection = json_decode($availableSection)->response->results;
-
-        $sections = collect([]);
-
-        foreach ($availableSection as $section) {
-            $newSection = new Section();
-            $newSection->name = $section->webTitle;
-            $sections->push($newSection);
-        }
-
-        // $uri = 'https://content.guardianapis.com/';
-        // $apiKey = '?api-key=9d97b471-ee1c-473a-b293-7998a92c4182';
-
-        $data = Http::get("https://content.guardianapis.com/search?api-key=9d97b471-ee1c-473a-b293-7998a92c4182");
-    
-
-        $data = json_decode($data)->response->results;
-        // dd($data);
-        // dd($data->response->results);
-        $articles = collect([]);
-      
-        foreach($data as $d){
-            $newArticle = new Article();
-            $newArticle->title = $d->webTitle;
-            $newArticle->category = $d->sectionName;
-            $newArticle->url = $d->webUrl;
-            $newArticle->webPublicationDate = $d->webPublicationDate;
-            $articles->push($newArticle);
-        }
-        
-    
         // return view('home', compact('articles'));
-        $content = View::make('home')->with(['articles' => $data, 'sections' => $sections]);
+        $content = View::make('home')->with(['articles' => $this->getArticles(), 'sections' => $this->getSections()]);
         return Response::make($content, 200);
     }
 
@@ -73,13 +41,32 @@ class HomeController extends Controller
     public function category($category)
     {
         if(!$category){
-            $searchKey = 'search';
+            $searchKey = null;
         } else {
             $searchKey = $category;
         }
 
-       
+    
+        // return view('home', compact('articles'));
+        $content = View::make('home')->with(['articles'=> $this->getArticles(), 'sections' => $this->getSections()]);
+        return Response::make($content, 200);
+    }
 
+
+
+    public function search(Request $req)
+    {
+
+        $searchKey = $req->input('category');
+    
+        // return view('home', compact('articles'));
+        $content = View::make('home')->with(['articles'=> $this->getArticles($searchKey), 'sections' => $this->getSections()]);
+        return Response::make($content, 200);
+    }
+
+
+    public function getSections()
+    {
         $availableSection =  $data = Http::get("https://content.guardianapis.com/sections?api-key=9d97b471-ee1c-473a-b293-7998a92c4182");
         $availableSection = json_decode($availableSection)->response->results;
 
@@ -90,54 +77,26 @@ class HomeController extends Controller
             $newSection->name = $section->webTitle;
             $sections->push($newSection);
         }
-        
-        $data = Http::get("https://content.guardianapis.com/$category?api-key=9d97b471-ee1c-473a-b293-7998a92c4182");
-        if(json_decode($data)->response->status == "error"){
-            abort(404);
-        }
 
-        $data = json_decode($data)->response->results;
-        
-
-        $articles = collect([]);
-      
-        foreach($data as $d){
-            $newArticle = new Article();
-            $newArticle->title = $d->webTitle;
-            $newArticle->category = $d->sectionName;
-            $newArticle->url = $d->webUrl;
-            $newArticle->webPublicationDate = $d->webPublicationDate;
-            $articles->push($newArticle);
-        }
-        
-    
-        // return view('home', compact('articles'));
-        $content = View::make('home')->with(['articles'=> $data, 'sections' => $sections]);
-        return Response::make($content, 200);
+        return $sections;
     }
 
-
-
-
-
-
-
-
-
-
-
-    public function search(Request $req)
+    public function getArticles($category = 'all')
     {
-
-        $searchKey = $req->input('category');
         
-        $data = Http::get("https://content.guardianapis.com/$searchKey?api-key=9d97b471-ee1c-473a-b293-7998a92c4182");
-        if(json_decode($data)->response->status == "error"){
-            abort(404);
+        if($category == 'all'){
+            $data = Http::get("https://content.guardianapis.com/search?api-key=9d97b471-ee1c-473a-b293-7998a92c4182");
+        } else {
+
+            $searchKey = $category;
+
+            $data = Http::get("https://content.guardianapis.com/$searchKey?api-key=9d97b471-ee1c-473a-b293-7998a92c4182");
+            if(json_decode($data)->response->status == "error"){
+                abort(404);
+            }
         }
 
         $data = json_decode($data)->response->results;
-        
 
         $articles = collect([]);
       
@@ -149,10 +108,9 @@ class HomeController extends Controller
             $newArticle->webPublicationDate = $d->webPublicationDate;
             $articles->push($newArticle);
         }
-        
-    
-        // return view('home', compact('articles'));
-        $content = View::make('home')->with('articles', $data);
-        return Response::make($content, 200);
+
+        return $articles;
+
     }
+
 }
