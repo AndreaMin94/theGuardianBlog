@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+
 use App\Models\Article;
 
+
 use App\Models\Section;
-
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\View;
@@ -56,10 +57,8 @@ class HomeController extends Controller
 
     public function search(Request $req)
     {
-
         $searchKey = $req->input('category');
     
-        // return view('home', compact('articles'));
         $content = View::make('home')->with(['articles'=> $this->getArticles($searchKey), 'sections' => $this->getSections()]);
         return Response::make($content, 200);
     }
@@ -97,7 +96,7 @@ class HomeController extends Controller
         }
 
         $data = json_decode($data)->response->results;
-
+       
         $articles = collect([]);
       
         foreach($data as $d){
@@ -107,6 +106,8 @@ class HomeController extends Controller
             $newArticle->url = $d->webUrl;
             $newArticle->webPublicationDate = $d->webPublicationDate;
             $articles->push($newArticle);
+            // $date = Carbon::createFromFormat('Y-m-d H:i:s', $newArticle->webPublicationDate);
+            
         }
 
         return $articles;
