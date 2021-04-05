@@ -21,7 +21,8 @@ class DatabaseSeeder extends Seeder
 
         foreach ($availableSection as $section) {
             $newSection = Section::create([
-                'name' => $section->webTitle
+                'name' => $section->webTitle,
+                'slug' => strtolower(str_replace(' ', '-', $section->webTitle))
             ]);
         }
     }

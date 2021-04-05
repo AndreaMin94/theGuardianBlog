@@ -24,8 +24,7 @@
                     </form>
                     <a href="{{ route('home') }}" class="btn btn-info font-weight-bold d-block my-2">All</a>
                     @foreach ($sections as $section)
-                    <a href="{{ route('articles.category', 
-                        ['category' => strtolower(str_replace(' ', '-', $section->name))]) }}" class="btn btn-info font-weight-bold d-block my-2">{{ $section->name }}</a>
+                    <a href="{{ route('articles.section', $section->slug) }}" class="btn btn-info font-weight-bold d-block my-2">{{ $section->name }}</a>
                     @endforeach
                 </div>
             </div>
@@ -39,7 +38,7 @@
                             <img class="card-img-top" src="https://picsum.photos/300/300" alt="Card image cap">
                             <div class="card-body">
                             <h3 class="card-title">{{ $article->title }}...</h3>
-                            <h5 class="card-text">{{ $article->category }}</h5>
+                            <h5 class="card-text">{{ $article->section->name }}, {{ $article->id }}</h5>
                             <a href="#" class="btn btn-primary">Go somewhere</a>
                             </div>
                         </div>

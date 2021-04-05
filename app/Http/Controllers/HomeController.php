@@ -33,23 +33,23 @@ class HomeController extends Controller
     public function index()
     {
         // return view('home', compact('articles'));
-        $content = View::make('home')->with(['articles' => $this->getArticles(), 'sections' => $this->getSections()]);
+        $content = View::make('home')->with(['articles' => $this->getArticles(), 'sections' => Section::all()]);
         return Response::make($content, 200);
     }
 
 
 
-    public function category($category)
+    public function section($section)
     {
-        if(!$category){
+        if(!$section){
             $searchKey = null;
         } else {
-            $searchKey = $category;
+            $searchKey = $section;
         }
 
     
         // return view('home', compact('articles'));
-        $content = View::make('home')->with(['articles'=> $this->getArticles(), 'sections' => $this->getSections()]);
+        $content = View::make('home')->with(['articles'=> $this->getArticles($section), 'sections' => Section::all()]);
         return Response::make($content, 200);
     }
 
@@ -58,59 +58,56 @@ class HomeController extends Controller
     public function search(Request $req)
     {
         $searchKey = $req->input('category');
-    
-        $content = View::make('home')->with(['articles'=> $this->getArticles($searchKey), 'sections' => $this->getSections()]);
+        $slug = strtolower(str_replace(' ', '-', $searchKey));
+     
+        $content = View::make('home')->with(['articles'=> $this->getArticles($slug), 'sections' => Section::all()]);
         return Response::make($content, 200);
     }
 
 
-    public function getSections()
-    {
-        $availableSection =  $data = Http::get("https://content.guardianapis.com/sections?api-key=9d97b471-ee1c-473a-b293-7998a92c4182");
-        $availableSection = json_decode($availableSection)->response->results;
-
-        $sections = collect([]);
-
-        foreach ($availableSection as $section) {
-            $newSection = new Section();
-            $newSection->name = $section->webTitle;
-            $sections->push($newSection);
-        }
-
-        return $sections;
-    }
 
     public function getArticles($category = 'all')
     {
         
         if($category == 'all'){
-            $data = Http::get("https://content.guardianapis.com/search?api-key=9d97b471-ee1c-473a-b293-7998a92c4182");
+            $fetchArticles = Http::get("https://content.guardianapis.com/search?api-key=9d97b471-ee1c-473a-b293-7998a92c4182");
+
         } else {
 
             $searchKey = $category;
 
-            $data = Http::get("https://content.guardianapis.com/$searchKey?api-key=9d97b471-ee1c-473a-b293-7998a92c4182");
-            if(json_decode($data)->response->status == "error"){
+            $fetchArticles = Http::get("https://content.guardianapis.com/$searchKey?api-key=9d97b471-ee1c-473a-b293-7998a92c4182");
+            if(json_decode($fetchArticles)->response->status == "error"){
                 abort(404);
             }
         }
 
-        $data = json_decode($data)->response->results;
-       
-        $articles = collect([]);
+        $fetchArticles = json_decode($fetchArticles)->response->results;
       
-        foreach($data as $d){
-            $newArticle = new Article();
-            $newArticle->title = $d->webTitle;
-            $newArticle->category = $d->sectionName;
-            $newArticle->url = $d->webUrl;
-            $newArticle->webPublicationDate = $d->webPublicationDate;
-            $articles->push($newArticle);
-            // $date = Carbon::createFromFormat('Y-m-d H:i:s', $newArticle->webPublicationDate);
-            
-        }
+      
+        foreach($fetchArticles as $article){
 
-        return $articles;
+            // $x = Article::where('id_string', $article->id)->get();
+            // dd($article->webPublicationDate);
+            $existingArticle = Article::where('id_string', $article->id)->first();
+            
+            if($existingArticle == null){
+                $section = Section::whereName($article->sectionName)->first();
+                $newArticle = Article::create([
+                    'id_string' => $article->id,
+                    'title' => $article->webTitle,
+                    'section_id' => $section->id,
+                    'url' => $article->webUrl,
+                    'published_at' => $article->webPublicationDate
+                ]);     
+            }
+
+        }
+        if($category == 'all'){
+            return Article::orderBy('id', 'desc')->take(9)->get();
+        } else {
+            return Section::where('slug', $category)->first()->articles->sortDesc()->take(10);
+        }
 
     }
 

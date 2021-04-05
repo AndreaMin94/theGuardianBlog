@@ -19,5 +19,5 @@ use App\Http\Controllers\HomeController;
 Auth::routes();
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/{category}' , [HomeController::class, 'category'])->name('articles.category');
+Route::get('/{section}' , [HomeController::class, 'section'])->name('articles.section');
 Route::get('/articles/search', [HomeController::class, 'search'])->name('articles.category.search');

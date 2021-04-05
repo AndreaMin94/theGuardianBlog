@@ -19,7 +19,7 @@ class CreateArticlesTable extends Migration
             $table->string('title');
             $table->unsignedBigInteger('section_id');
             $table->string('url');
-            $table->timestamp('webPublicationDate');
+            $table->timestamp('published_at');
 
             $table->foreign('section_id')->references('id')->on('sections');
             $table->timestamps();
