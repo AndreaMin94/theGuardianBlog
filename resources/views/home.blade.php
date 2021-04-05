@@ -33,16 +33,18 @@
             <div class="container my-3">
                 <div class="row">
                     @foreach ($articles as $article)
-                    <div class="col-12 col-md-3 my-3">
+                    <article class="col-12 col-md-3 my-3">
                         <div class="card bg-dark text-white">
-                            <img class="card-img-top" src="https://picsum.photos/300/300" alt="Card image cap">
+                            <picture>
+                                <img class="card-img-top" src="https://picsum.photos/300/300" alt="Card image cap">
+                            </picture>
                             <div class="card-body">
                             <h3 class="card-title">{{ $article->title }}...</h3>
-                            <h5 class="card-text">{{ $article->section->name }}, {{ $article->id }}</h5>
+                            <h5 class="card-text">{{ $article->section->name }}</h5>
                             <a href="#" class="btn btn-primary">Go somewhere</a>
                             </div>
                         </div>
-                    </div>
+                    </article>
                     @endforeach
                 </div>
             </div>
